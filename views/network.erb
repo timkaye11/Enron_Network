@@ -1,0 +1,122 @@
+ <!DOCTYPE html> 
+  <head>
+  	<title> Enron Visualization</title>
+  </head>
+
+  <body> 
+ <style> 
+.link {  
+stroke: #666;
+opacity: 0.6;
+stroke-width: 1.5px; 
+} 
+.node circle { 
+stroke: rgba(0, 102, 204, 0.75); 
+stroke-width: 1.5px; 
+fill: #6AD780;
+} 
+text { 
+font: 12px serif; 
+opacity: 1;
+
+} 
+</style> 
+
+<script src=http://d3js.org/d3.v3.min.js></script>
+
+<script> 
+ var links = [
+    {"source" : 0 ,"target" :  0 ,"value" :  42 },{"source" : 0 ,"target" :  4 ,"value" :  7 },{"source" : 0 ,"target" :  7 ,"value" :  8 },{"source" : 0 ,"target" :  8 ,"value" :  11 },{"source" : 0 ,"target" :  21 ,"value" :  4 },{"source" : 0 ,"target" :  22 ,"value" :  1 },{"source" : 4 ,"target" :  5 ,"value" :  6 },{"source" : 4 ,"target" :  8 ,"value" :  6 },{"source" : 4 ,"target" :  16 ,"value" :  28 },{"source" : 4 ,"target" :  22 ,"value" :  2 },{"source" : 7 ,"target" :  0 ,"value" :  4 },{"source" : 7 ,"target" :  8 ,"value" :  4 },{"source" : 7 ,"target" :  17 ,"value" :  25 },{"source" : 7 ,"target" :  21 ,"value" :  4 },{"source" : 8 ,"target" :  0 ,"value" :  6 },{"source" : 8 ,"target" :  7 ,"value" :  4 },{"source" : 8 ,"target" :  16 ,"value" :  7 },{"source" : 11 ,"target" :  11 ,"value" :  54 },{"source" : 12 ,"target" :  9 ,"value" :  3 },{"source" : 12 ,"target" :  12 ,"value" :  1 },{"source" : 12 ,"target" :  20 ,"value" :  1 },{"source" : 13 ,"target" :  13 ,"value" :  3 },{"source" : 16 ,"target" :  0 ,"value" :  4 },{"source" : 16 ,"target" :  4 ,"value" :  4 },{"source" : 16 ,"target" :  5 ,"value" :  4 },{"source" : 16 ,"target" :  6 ,"value" :  4 },{"source" : 16 ,"target" :  7 ,"value" :  4 },{"source" : 16 ,"target" :  8 ,"value" :  4 },{"source" : 16 ,"target" :  16 ,"value" :  4 },{"source" : 16 ,"target" :  20 ,"value" :  1 },{"source" : 17 ,"target" :  7 ,"value" :  4 },{"source" : 20 ,"target" :  0 ,"value" :  1 },{"source" : 20 ,"target" :  6 ,"value" :  3 },{"source" : 20 ,"target" :  8 ,"value" :  6 },{"source" : 20 ,"target" :  16 ,"value" :  1 },{"source" : 22 ,"target" :  24 ,"value" :  14 },{"source" : 24 ,"target" :  11 ,"value" :  20 },{"source" : 24 ,"target" :  22 ,"value" :  8 },{"source" : 24 ,"target" :  24 ,"value" :  12 }
+  ];
+ var nodes = [
+    {"name" : "john.arnold.enron.com"}, {"name" : "micheal.swerzzbin.enron.com"}, {"name" : "timothy.belden.enron.com"}, {"name" : "matthew.motley.enron.com"}, {"name" : "kevin.presto.enron.com"}, {"name" : "mark.davis.enron.com"}, {"name" : "robert.benson.enron.com"}, {"name" : "hunter.shively.enron.com"}, {"name" : "fletcher.sturm.enron.com"}, {"name" : "robert.badeer.enron.com"}, {"name" : "jeffery.richter.enron.com"}, {"name" : "thomas.martin.enron.com"}, {"name" : "christopher.calger.enron.com"}, {"name" : "frank.ermis.enron.com"}, {"name" : "michael.maggi.enron.com"}, {"name" : "lawrence.may.enron.com"}, {"name" : "rogers.herndon.enron.com"}, {"name" : "andrew.lewis.enron.com"}, {"name" : "james.schweiger.enron.com"}, {"name" : "geoffrey.storey.enron.com"}, {"name" : "barry.tycholiz.enron.com"}, {"name" : "sandra.brawner.enron.com"}, {"name" : "don.black.enron.com"}, {"name" : "harpreet.arora.enron.com"}, {"name" : "eric.bass.enron.com"}, {"name" : "sean.crandall.enron.com"}
+  ];
+
+var width = 600, 
+	height = 600;
+
+var svg = d3.select("body").append("svg") 
+	.attr("width", width) 
+	.attr("height", height); 
+
+var force = d3.layout.force() 
+	.nodes(nodes) 
+	.links(links) 
+	.size([width, height]) 
+	.linkDistance(50) 
+	.charge(-150) 
+	.on("tick", tick) 
+	.start(); 
+
+var link = svg.selectAll(".link") 
+	.data(force.links()) 
+	.enter().append("line") 
+	.attr("class", "link")
+	.style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+var node = svg.selectAll(".node") 
+	.data(force.nodes()) 
+	.enter().append("g") 
+	.attr("class", "node") 
+	.on('mouseover', function(d){
+	    var nodeSelection = d3.select(this).style({opacity:'0.8'});
+	    nodeSelection.select("text").style({opacity:'1.0'});
+	})
+	.on('mouseout', function(d) {
+		var nodeSelection = d3.select(this).style({opacity: '1.0'});
+		nodeSelection.select("text").style({opacity: '0.0'});
+	})
+	.call(force.drag); 
+
+	node.append("circle") 
+	.attr("r", 8);
+
+	node.append("text") 
+	.text(function(d) { return d.name; })
+	.style("opacity", 0.0); 
+
+	
+
+function tick() { 
+	link 
+	.attr("x1", function(d) { return d.source.x; }) 
+	.attr("y1", function(d) { return d.source.y; }) 
+	.attr("x2", function(d) { return d.target.x; }) 
+	.attr("y2", function(d) { return d.target.y; }); 
+
+node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; }); 
+} 
+
+function mouseover() { 
+	d3.select(this).select("circle").transition() 
+	.duration(500) 
+	.style("fill", "#548964")
+	.attr("r", 11); 
+} 
+
+function mouseout() { 
+	d3.select(this).select("circle").transition() 
+	.duration(500) 
+	.style("fill", "#6AD780")
+	.attr("r", 8); 
+} 
+
+function click() {
+
+	
+
+	d3.select(this).select("text").transition()
+	.duration(750)
+	.style("fill", "#B0B0B0")
+	.style("font", "12px times")
+	.style("stroke", "black")
+	d3.select(this).select("circle").transition()
+	.duration(750)
+	.style("fill", "#548964")
+	.attr("r", 11)
+}
+
+
+
+</script>
+ </body>

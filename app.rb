@@ -1,5 +1,9 @@
 require 'sinatra'
 
 get '/' do
-	erb :index
+	erb :graph
+end
+
+get '/network' do
+	erb :network
 end
