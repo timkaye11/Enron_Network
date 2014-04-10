@@ -24,6 +24,16 @@ font: 18px times;
 stroke: black;
 color: black;
 opacity: 1;
+}
+
+div.bar {
+    display: inline-block;
+    width: 32px;
+    height: 95px;   /* We'll override this later */
+    background-color: teal;
+    margin-right: 22px;
+}
+
 
 } 
 </style> 
@@ -32,27 +42,72 @@ opacity: 1;
 <div class="container-fluid"> 
 
 <div class="row"> 
-	<div class="col-md-6"> <h1> Enron Network Visualization</h1>
+	<div class="col-md-12"> <h1 class="text-center"> Enron Network Visualization</h1>
 	<hr>
 	 </div>
 	</div>
 	<div class="row">
-	<div class="col-md-8">
-	<p class="lead"> made for Pomona college math research by tim kaye + friends in may 2014</p>
-	<p class="lead"> built using the cmu enron corpus, d3 and r </p>
+	<div class="col-md-12">
+	<p class="lead text-center"> made for Pomona college math research by tim kaye + friends in may 2014</p>
+	<p class="lead text-center"> built using the cmu enron corpus, d3 and r </p>
 	</div>
 </div>
 
-<div class="col-md-11 col-md-offset-2">
+<div class="row" style="padding-top: 35px;">
+<div class="col-md-offset-3 col-md-3 ">
+	<div class="keyIn" ><p class="lead" style="padding-right:15px;">Inside Colors - Department </p></div>
+</div>
+<div class="col-md-3 col-md-offset-1">
+	<div class="keyOut"><p class="lead" style="padding-right:15px;">Outside Colors - Title</p></div>
+	</div>
+		
 
-<div class="graph"> 
+            <script>
+            	var dataset = [ 1, 2, 3, 4];
+            	var dataset2 = [ 1, 2, 3, 4,5 ];
+            	var color = d3.scale.category20();
+				var color2 = d3.scale.category20b();
 
+
+				d3.select(".keyIn").selectAll("div")
+				    .data(dataset)
+				    .enter()
+				    .append("div")
+				    .style("background-color", function(d) {
+				    	return color(d);
+				    })
+				    .attr("class", "bar");
+
+				d3.select(".keyOut").selectAll("div")
+					.data(dataset2)
+					.enter()
+					.append("div")
+					.style("margin-right", "34px")
+					.style("background-color", function(d) {
+						return color2(d);
+					})
+					.attr("class", "bar");
+
+
+            </script>
+     
+</div>
+<div class="row">
+<div class="col-md-offset-3 col-md-3 "> <p class="lead"> ENA,  ETS, EWS, Other </p></div>
+<div class="col-md-3 col-md-offset-1"> <p class="lead"> CEO, VP, Director, Manager, Other </p></div>
+</div>
+
+<div class="row">
+	<div class="graph col-md-offset-2"> </div>
+	</div>
+
+	
 
 <script> 
  
 
-var width = 1200, 
-	height = 900;
+var width = 1400, 
+	height = 1200;
 
 var svg = d3.select(".graph").append("svg") 
 	.attr("width", width) 
@@ -93,7 +148,7 @@ var link = svg.selectAll(".link")
 	.attr("class", "link")
 	.style("stroke-width", function(d) { return Math.sqrt(d.value*0.04); });
 
-var color = d3.scale.category20c();
+var color = d3.scale.category20();
 var colorOutside = d3.scale.category20b();
 
 var node = svg.selectAll(".node") 
@@ -148,8 +203,8 @@ function click() {
 		.each("end", function(d) { d3.select("this").transition().attr("r", 8).style("fill", "#6AD780"); });
 		}
 
-//var links = svg.select('.link')
-//links.transition().duration(5000).style({"stroke-width": 0});
+var links = svg.selectAll('.link')
+// links.transition().duration(5000).style({"stroke-width": 0});
 });
 
 </script>
