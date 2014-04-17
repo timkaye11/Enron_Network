@@ -5,6 +5,14 @@ get '/' do
 	
 end
 
+get '/clusters' do
+	erb :clusters
+end
+
+get '/TOM' do 
+	erb :rank
+end
+
 get '/network' do
 	erb :network
 end

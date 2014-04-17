@@ -42,64 +42,21 @@ div.bar {
 <div class="container-fluid"> 
 
 <div class="row"> 
-	<div class="col-md-12"> <h1 class="text-center"> Enron Network Visualization</h1>
+	<div class="col-md-12"> <h1 class="text-center"> Enron Network Visualization - Clusters</h1>
 	<hr>
 	 </div>
 	</div>
 	<div class="row">
 	<div class="col-md-12">
-	<h3 class="text-center"> To see the k-means cluster analysis, click <a href='/clusters' style="text-decoration: none;"> here </a> </h3>
-	<h3 class="text-center"> To see the TOM-centrality analysis, click <a href='/TOM' style="text-decoration: none;"> here </a></h3>
-	<p class="lead text-center" style="padding-top: 25px;"> made for Pomona college math research by tim kaye + friends in may 2014</p>
-	<p class="lead text-center"> built using the cmu enron corpus, d3 and r. </p>
-
+	<p class="lead text-center"> made for Pomona college math research by tim kaye + friends in may 2014</p>
+	<p class="lead text-center"> built using the cmu enron corpus, d3 and r </p>
 	</div>
 </div>
 
-<div class="row" style="padding-top: 35px;">
-<div class="col-md-offset-3 col-md-3 ">
-	<div class="keyIn" ><p class="lead" style="padding-right:15px;">Inside Colors - Department </p></div>
-</div>
-<div class="col-md-3 col-md-offset-1">
-	<div class="keyOut"><p class="lead" style="padding-right:15px;">Outside Colors - Title</p></div>
-	</div>
-		
-
-            <script>
-            	var dataset = [ 1, 2, 3, 4];
-            	var dataset2 = [ 1, 2, 3, 4,5 ];
-            	var color = d3.scale.category20();
-				var color2 = d3.scale.category20b();
-
-
-				d3.select(".keyIn").selectAll("div")
-				    .data(dataset)
-				    .enter()
-				    .append("div")
-				    .style("background-color", function(d) {
-				    	return color(d);
-				    })
-				    .attr("class", "bar");
-
-				d3.select(".keyOut").selectAll("div")
-					.data(dataset2)
-					.enter()
-					.append("div")
-					.style("margin-right", "34px")
-					.style("background-color", function(d) {
-						return color2(d);
-					})
-					.attr("class", "bar");
 
 		
 
-            </script>
-     
-</div>
-<div class="row">
-<div class="col-md-offset-3 col-md-3 "> <p class="lead"> ENA,  ETS, EWS, Other </p></div>
-<div class="col-md-3 col-md-offset-1"> <p class="lead"> CEO, VP, Director, Manager, Other </p></div>
-</div>
+        
 
 <div class="row">
 	<div class="graph col-md-offset-2"> </div>
@@ -118,19 +75,6 @@ var svg = d3.select(".graph").append("svg")
 	.attr("height", height); 
 
 
-
-var nodes = [];
-d3.json("nodes.json", function(error, data) {
-	nodes= data;
-});
-
-var links = [];
- d3.json("links.json", function(error, data) {
- 	console.log(error)
-  	links = data;
-  });
-
-
 var force = d3.layout.force() 
 	//.nodes(nodes) 
 	//.links(links) 
@@ -140,7 +84,7 @@ var force = d3.layout.force()
 	
 	//.start(); 
 
-d3.json("original.json", function(error, graph) {
+d3.json("rank.json", function(error, graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
@@ -150,7 +94,7 @@ var link = svg.selectAll(".link")
 	.data(graph.links) 
 	.enter().append("line") 
 	.attr("class", "link")
-	.style("stroke-width", function(d) { return Math.log(d.value);});//.sqrt(d.value*0.04); });
+	.style("stroke-width", function(d) { return Math.sqrt(d.value*0.04); });
 
 var color = d3.scale.category20();
 var colorOutside = d3.scale.category20b();
@@ -159,8 +103,12 @@ var node = svg.selectAll(".node")
 	.data(graph.nodes)
 	.enter().append("g") 
 	.attr("class", "node") 
-	.style("fill", function(d) { return color(d.title); })
-	.style("stroke", function(d) { return colorOutside(d.department); })
+	//.style("stroke-width", function(d) { return (5 - Math.log(d.rank)) + 'px';})
+	.style("fill", function(d) { 
+		var r = d.rank;
+		if (r > 8) { r = 8;}
+		return color(r); 
+	})
 	.on('mouseover', mouseover)
 	.on('mouseout', mouseout)
 	.on('click', click)
@@ -187,7 +135,7 @@ node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"
 
 function mouseover() { 
 	var nodeSelection = d3.select(this);
-	    nodeSelection.style({"fill": '#6AD780'});
+	  //  nodeSelection.style({"fill": '#6AD780'});
 	    nodeSelection.select("text").style({opacity:'1'});
 	    nodeSelection.select("text").style({"font": "17px serif"});
 	   	nodeSelection.select("text").style({"fill": "black"});
@@ -195,7 +143,7 @@ function mouseover() {
 
 function mouseout() { 
 		var nodeSelection = d3.select(this);
-		nodeSelection.style({"fill": function(d) { return color(d.title);}});
+		//nodeSelection.style({"fill": function(d) { return color(d.rank);}});
 		nodeSelection.select("text").style({opacity: '0.0'});
 } 
 
