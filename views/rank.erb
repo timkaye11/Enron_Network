@@ -42,24 +42,40 @@ div.bar {
 <div class="container-fluid"> 
 
 <div class="row"> 
-	<div class="col-md-12"> <h1 class="text-center"> Enron Network Visualization - Clusters</h1>
+	<div class="col-md-12"> <h1 class="text-center"> Enron Network Visualization - Rank</h1>
 	<hr>
 	 </div>
 	</div>
 	<div class="row">
 	<div class="col-md-12">
-	<p class="lead text-center"> made for Pomona college math research by tim kaye + friends in may 2014</p>
-	<p class="lead text-center"> built using the cmu enron corpus, d3 and r </p>
+	<p class="lead text-center"> The top three people for each ranking algorithm are displayed</p>
+	<p class="lead text-center">  Orange indicates TOM/Closeness, Green shows Betweeness, and Evcent is in Red</p>
+	<p class="keyIn text-center"></p>
+	<p class="legend text-center"> dasovich, shapiro, kean = orange  <br> jones, panus, shackleton = red  <br> grigsby, kitchen, dasovich = green</p> 
 	</div>
 </div>
 
 
+
+ <script>
+            	var dataset = [ 5, 4, 7,3];
+            	var color = d3.scale.category10();
+
+				d3.select(".keyIn").selectAll("div")
+				    .data(dataset)
+				    .enter()
+				    .append("div")
+				    .style("background-color", function(d) {
+				    	return color(d);
+				    })
+				    .attr("class", "bar");
+</script>
 		
 
         
 
 <div class="row">
-	<div class="graph col-md-offset-2"> </div>
+	<div class="graph col-md-offset-2">  </div>
 	</div>
 
 	
@@ -84,7 +100,7 @@ var force = d3.layout.force()
 	
 	//.start(); 
 
-d3.json("rank.json", function(error, graph) {
+d3.json("clusters.json", function(error, graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
@@ -96,7 +112,7 @@ var link = svg.selectAll(".link")
 	.attr("class", "link")
 	.style("stroke-width", function(d) { return Math.sqrt(d.value*0.04); });
 
-var color = d3.scale.category20();
+var color = d3.scale.category10();
 var colorOutside = d3.scale.category20b();
 
 var node = svg.selectAll(".node") 
@@ -105,8 +121,8 @@ var node = svg.selectAll(".node")
 	.attr("class", "node") 
 	//.style("stroke-width", function(d) { return (5 - Math.log(d.rank)) + 'px';})
 	.style("fill", function(d) { 
-		var r = d.rank;
-		if (r > 8) { r = 8;}
+		var r = d.group;
+		if (r ==3) {return color (r+5);}
 		return color(r); 
 	})
 	.on('mouseover', mouseover)

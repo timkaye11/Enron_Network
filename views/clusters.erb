@@ -50,11 +50,27 @@ div.bar {
 	<div class="col-md-12">
 	<p class="lead text-center"> made for Pomona college math research by tim kaye + friends in may 2014</p>
 	<p class="lead text-center"> built using the cmu enron corpus, d3 and r </p>
+	<P class="keyIn"> </P>
 	</div>
 </div>
 
 
-		
+ <script>
+            	var dataset = [ 1, 2, 3, 4];
+            	var dataset2 = [ 1, 2, 3, 4,5 ];
+            	var color = d3.scale.category20();
+				var color2 = d3.scale.category20b();
+
+
+				d3.select(".keyIn").selectAll("div")
+				    .data(dataset)
+				    .enter()
+				    .append("div")
+				    .style("background-color", function(d) {
+				    	return color(d);
+				    })
+				    .attr("class", "bar");
+</script>
 
         
 
@@ -116,7 +132,7 @@ var node = svg.selectAll(".node")
 	.data(graph.nodes)
 	.enter().append("g") 
 	.attr("class", "node") 
-	.style("fill", function(d) { return color(d.cluster); })
+	.style("fill", function(d) { return color(d.group); })
 	.on('mouseover', mouseover)
 	.on('mouseout', mouseout)
 	.on('click', click)

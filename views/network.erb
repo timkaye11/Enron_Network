@@ -1,7 +1,7 @@
  <!DOCTYPE html> 
   <head>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jsearch/1.10.2/jsearch.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jsearchui/1.8.15/jsearch-ui.min.js"></script>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
@@ -17,8 +17,18 @@ stroke-width: 1.5px;
 } 
 .node circle { 
 stroke-width: 4px; 
-
 } 
+#footer {
+  font: 24pt helvetica neue;
+  color: #666;
+}
+
+input {
+  font: 24pt helvetica neue;
+  background: none;
+  border: none;
+  outline: 0;
+}
 .node text { 
 font: 18px times; 
 stroke: black;
@@ -56,13 +66,14 @@ div.bar {
 	</div>
 </div>
 
+
 <div class="row" style="padding-top: 35px;">
 <div class="col-md-offset-3 col-md-3 ">
 	<div class="keyIn" ><p class="lead" style="padding-right:15px;">Inside Colors - Department </p></div>
 </div>
 <div class="col-md-3 col-md-offset-1">
 	<div class="keyOut"><p class="lead" style="padding-right:15px;">Outside Colors - Title</p></div>
-	</div>
+</div>
 		
 
             <script>
@@ -100,6 +111,14 @@ div.bar {
 <div class="col-md-offset-3 col-md-3 "> <p class="lead"> ENA,  ETS, EWS, Other </p></div>
 <div class="col-md-3 col-md-offset-1"> <p class="lead"> CEO, VP, Director, Manager, Other </p></div>
 </div>
+<div class="row" id="footer">
+	<form role="form">
+		<div class="col-md-offset-3 col-md-6">
+	      <label  for="search">search: </label>
+	      <input class="form-control" type="text" id="search" onkeyup="update(this.value)">
+	    </div>
+    </form>
+</div>
 
 <div class="row">
 	<div class="graph col-md-offset-2"> </div>
@@ -119,23 +138,11 @@ var svg = d3.select(".graph").append("svg")
 
 
 
-var nodes = [];
-d3.json("nodes.json", function(error, data) {
-	nodes= data;
-});
-
-var links = [];
- d3.json("links.json", function(error, data) {
- 	console.log(error)
-  	links = data;
-  });
-
-
 var force = d3.layout.force() 
 	//.nodes(nodes) 
 	//.links(links) 
 	.size([width, height]) 
-	.linkDistance(100) 
+	.linkDistance(200) 
 	.charge(-200);
 	
 	//.start(); 
@@ -159,8 +166,8 @@ var node = svg.selectAll(".node")
 	.data(graph.nodes)
 	.enter().append("g") 
 	.attr("class", "node") 
-	.style("fill", function(d) { return color(d.title); })
-	.style("stroke", function(d) { return colorOutside(d.department); })
+	.style("fill", function(d) { return color(2); })
+	.style("stroke", function(d) { return colorOutside(2); })
 	.on('mouseover', mouseover)
 	.on('mouseout', mouseout)
 	.on('click', click)
@@ -171,7 +178,7 @@ var node = svg.selectAll(".node")
 
 	node.append("text") 
 	.text(function(d) { return d.name; })
-	.style("opacity", 0.0); 
+	.style("opacity", 1.0); 
 
 	
 
@@ -207,13 +214,36 @@ function click() {
 		.each("end", function(d) { d3.select("this").transition().attr("r", 8).style("fill", "#6AD780"); });
 		}
 
+
+function update(search) {
+  if (search != re) {
+    re = new RegExp(search, "i");
+
+    var matching = classes.filter(function(d) { return d.name.match(re); });
+
+    d3.selectAll("text.node").data(matching, function(d) { return d.name; })
+      // do something with the nodes
+
+    // can be source or target in links, so we use a different method here
+    links.filter(function(d) {
+        var ret = false;
+        matching.forEach(function(e) {
+          ret = ret || e.name == d.source.name || e.name == d.target.name;
+        });
+        return ret;
+      })
+      // do something with the links
+  }
+}
 var links = svg.selectAll('.link')
 // links.transition().duration(5000).style({"stroke-width": 0});
 
 this.addNode = function (id) {
     nodes.push({"id":id});
+    console.log(id);
     update();
 };
+
 
 
 });
